@@ -1,6 +1,8 @@
 package main
 
 import (
+	"RestApi/auth"
+	"RestApi/middleware"
 	"errors"
 	"log"
 	"net/http"
@@ -164,28 +166,31 @@ func setupRouter() *gin.Engine {
 
 	r := gin.Default()
 
+	//login user and generate token jwt
+	r.POST("/login", auth.LoginHandler)
+
 	//CREATE Data
-	r.POST("/student", func(ctx *gin.Context) {
+	r.POST("/student", middleware.AuthValidate, func(ctx *gin.Context) {
 		postHandler(ctx, db)
 	})
 
 	//Get all data
-	r.GET("/student", func(ctx *gin.Context) {
+	r.GET("/student", middleware.AuthValidate , func(ctx *gin.Context) {
 		getAllHandler(ctx, db)
 	})
 
 	// //Get data by id
-	r.GET("/student/:student_id", func(ctx *gin.Context) {
+	r.GET("/student/:student_id",  middleware.AuthValidate,func(ctx *gin.Context) {
 		getHandler(ctx, db)
 	})
 
 	// //Update Data
-	r.PUT("/student/:student_id", func(ctx *gin.Context) {
+	r.PUT("/student/:student_id",  middleware.AuthValidate,func(ctx *gin.Context) {
 		putHandler(ctx, db)
 	})
 
 	// //Delete Data
-	r.DELETE("/student/:student_id", func(ctx *gin.Context) {
+	r.DELETE("/student/:student_id",  middleware.AuthValidate,func(ctx *gin.Context) {
 		delHandler(ctx, db)
 	})
 
